@@ -13,6 +13,9 @@
     "paths": {
       "@service-fw": [
         "./src/service-fw"
+      ],
+      "@storage-logger": [
+        "./src/storage/logger/storage-logger.ts"
       ]
     }
   },

@@ -1,6 +1,7 @@
 import { Service, ResponseUtils, logger } from '@service-fw';
 import { router, errorMessages } from './storage';
 import config from 'config';
+import { initDB } from './storage/dao';
 
 const _svc_conf = config.get<{ name: string; port: number }>('service');
 const _logger = logger(_svc_conf.name);
@@ -14,10 +15,11 @@ Service({
     init: () => {
       _logger.info(config);
     },
-    ready: () => {
+    ready: async () => {
+      await initDB();
       _logger.info('ready ...');
     },
-    destroy: () => {
+    destroy: async () => {
       _logger.info('destroy ...');
     }
   }
