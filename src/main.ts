@@ -12,7 +12,7 @@ Service({
   name: _svc_conf.name,
   router: router,
   hooks: {
-    init: () => {
+    init: async () => {
       _logger.info(config);
     },
     ready: async () => {
