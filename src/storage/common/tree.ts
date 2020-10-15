@@ -25,8 +25,8 @@ export class Tree {
    * 数组生成树结构数据
    * @param data 
    */
-  generateTree(data: Array<any>): TreeInfo {
-    let result: TreeInfo;
+  generateTree(data: Array<any>) {
+    let result;
     for (let i = 0; i < data.length; i++) {
       if (data[i][this.no] === this.rootNo) {
         const item = {
@@ -143,12 +143,8 @@ export class Tree {
    * @param parent_no 
    * @param childArray 
    */
-  getMaxNo(parent_no: string, childArray?: Array<any>): string {
-    // 只有根节点没有其他任何节点的情况
-    // if (parent_no === this.rootNo && (childArray.length === 0 || !childArray)) {
-    //   return '100';
-    // }
-    
+  generateMaxNo(parent_no: string, childArray?: Array<any>): string {
+  
     if (childArray.length === 0 || !childArray) {
       return parent_no + '001';
     }
@@ -162,7 +158,7 @@ export class Tree {
       }
     });
     let res;
-    const num = Number(_maxNo) + 1; // num可能1位/2位/3位
+    const num = Number(_maxNo) + 1; // num可能1位/2位/3位 
     if(num < 10) {
       res = `${parent_no}00${num}`;
     }

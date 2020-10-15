@@ -1,6 +1,6 @@
 export interface StoreRsDB {
   rsId?: string;
-  entityType?: number; // 1image 2folder
+  entityType?: number; // 1folder 2image
   entityId?: number;
   rsPath?: string;
   rsNo?: string;
