@@ -9,6 +9,7 @@ import { koaError } from './koa-error';
 import { ServiceParams } from '../service-params';
 import { ResponseUtils } from '../utils';
 import { Context } from 'koa';
+import serve from 'koa-static';
 
 export function middleware(conf: ServiceParams) {
   return compose([
@@ -36,6 +37,7 @@ export function middleware(conf: ServiceParams) {
       textLimit: '20mb'
     }),
     koaJson(),
+    serve('./assets'), // 设置静态资源服务
     async (ctx: Context, next) => {
       try {
         await next();

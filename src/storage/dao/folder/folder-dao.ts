@@ -26,8 +26,15 @@ async function insert(options: FolderDB): Promise<number> {
   return res;
 }
 
+async function getFolder(options?: FolderDB): Promise<FolderDB[]> {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).select('*').where(_options);
+  return res;
+}
+
 
 export const folder_dao = {
   ensure,
-  insert
+  insert,
+  getFolder
 };

@@ -28,8 +28,15 @@ async function insert(options: ImageDB): Promise<number> {
   return res;
 }
 
+async function getImage(options?: ImageDB): Promise<ImageDB[]> {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).select('*').where(_options);
+  return res;
+}
+
 
 export const image_dao = {
   ensure,
-  insert
+  insert,
+  getImage
 };

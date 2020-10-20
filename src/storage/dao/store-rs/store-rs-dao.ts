@@ -3,6 +3,8 @@ import { storage_logger as logger } from '@storage-logger';
 import { StoreRsDB } from './store-rs-types';
 import { DaoType } from '../dao-types';
 import { DataOptions, dbHelper } from '../utils';
+import { folder_dao } from '../folder';
+import { image_dao } from '../image';
 
 const TABLE_NAME = 'store_rs';
 
@@ -44,11 +46,37 @@ async function getStoreRs(options: StoreRsDB): Promise<StoreRsDB[]> {
 
 async function getStoreRsDetail(options: StoreRsDB): Promise<StoreRsDB[]> {
   const _options = DataOptions(options);
-  const res = await db.table(TABLE_NAME).select('*').leftJoin('folder', function() {
-    this.on(`${TABLE_NAME}.entityId`, '=', 'folder.folderId').onIn(`${TABLE_NAME}.entityType`, ['1']);
-  }).leftJoin('image', function() {
-    this.on(`${TABLE_NAME}.entityId`, '=', 'image.imgId').onIn(`${TABLE_NAME}.entityType`, ['2']);
-  }).where(_options);
+  // const res = await db.table(TABLE_NAME).select('*').leftJoin('folder', function() {
+  //   this.on(`${TABLE_NAME}.entityId`, '=', 'folder.folderId').onIn(`${TABLE_NAME}.entityType`, ['1']);
+  // }).leftJoin('image', function() {
+  //   this.on(`${TABLE_NAME}.entityId`, '=', 'image.imgId').onIn(`${TABLE_NAME}.entityType`, ['2']);
+  // }).where(_options);
+  const res = [];
+  const _folderData = await folder_dao.getFolder();
+  const _imgData = await image_dao.getImage();
+  const _storeRsData: StoreRsDB[] = await db.table(TABLE_NAME).select('*').where(_options);
+  _storeRsData.forEach(_s => {
+    let _entityObj;
+    if(_s.entityType === 1) {
+      _entityObj = _getEntityData(_s, _folderData);
+    } else if(_s.entityType === 2) {
+      _entityObj = _getEntityData(_s, _imgData);
+    }
+    const _resItem = Object.assign({}, _s, _entityObj);
+    res.push(_resItem);
+  });
+  return res;
+}
+
+function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
+  let res = {};
+  const _entityId = storeRsItem.entityId;
+  entityData.forEach(e => {
+    const _id = e['imgId'] || e['folderId'];
+    if(_entityId === _id) {
+      res = e;
+    }
+  });
   return res;
 }
 

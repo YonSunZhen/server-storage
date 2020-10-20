@@ -22,9 +22,6 @@ export async function insert(ctx) {
     imgIntactName: `${_body.imgOriginName}_intact`,
     imgCreateAt: new Date()
   };
-  console.log('这里是调试1');
-  console.log(_image);
-  
   // 添加图片
   const addImageRes = await image_dao.insert(_addImageParams);
   const _entityId = addImageRes[0];
@@ -32,7 +29,7 @@ export async function insert(ctx) {
   const getStoreRsRes = await store_rs_dao.getStoreRs({rsParentNo: _rsParentNo, rsStatus: 1});
   const parentInfo = (await store_rs_dao.getStoreRs({rsNo: _rsParentNo, rsStatus: 1}))[0];
   const rsNo = tree.generateMaxNo(_rsParentNo, getStoreRsRes);
-  const _rsPath = `${parentInfo.rsPath}2_${_entityId}_${_body.imgOriginName}.${_imgType}/`;
+  const _rsPath = `${parentInfo.rsPath}2_${_entityId}_${_body.imgOriginName}.${_imgType}`;
   const addStoreRsRes = await store_rs_dao.insert({
     entityType: 2,
     entityId: _entityId,
