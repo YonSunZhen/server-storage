@@ -24,7 +24,7 @@ async function ensure() {
     }).catch((err) => logger.error(err));
     await db.table(TABLE_NAME).insert([
       {
-        'entityType': 2,
+        'entityType': 1,
         'rsPath': '/',
         'rsNo': '100'
       }
@@ -80,9 +80,16 @@ function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
   return res;
 }
 
+async function update(rsNo: string, options: StoreRsDB) {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).update(_options).where({rsNo});
+  return res;
+}
+
 export const store_rs_dao = {
   ensure,
   insert,
   getStoreRs,
-  getStoreRsDetail
+  getStoreRsDetail,
+  update
 };

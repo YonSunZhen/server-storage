@@ -21,17 +21,17 @@ export async function insert(ctx) {
   const parentInfo = (await store_rs_dao.getStoreRs({rsNo: rsParentNo, rsStatus: 1}))[0];
   const rsNo = tree.generateMaxNo(rsParentNo, getStoreRsRes);
   const _rsPath = `${parentInfo.rsPath}1_${_entityId}_${_body.folderName}/`;
-  const addStoreRsRes = await store_rs_dao.insert({
-    entityType: 1,
-    entityId: _entityId,
-    rsNo,
-    rsParentNo,
-    rsCreateAt: new Date(),
-    rsPath: _rsPath
-  });
   // 创建文件夹
   try {
     fs.mkdirSync(`./assets${_rsPath}`);
+    const addStoreRsRes = await store_rs_dao.insert({
+      entityType: 1,
+      entityId: _entityId,
+      rsNo,
+      rsParentNo,
+      rsCreateAt: new Date(),
+      rsPath: _rsPath
+    });
     if(addStoreRsRes) {
       const _res = await store_rs_dao.getStoreRsDetail({rsId: addStoreRsRes[0]});
       ctx.body = ResponseUtils.normal<any>({ data: _res });
