@@ -2,7 +2,9 @@ import fs from 'fs';
 
 export class Fs {
 
-  constructor() {}
+  // constructor() {
+
+  // }
 
   // 同步创建文件夹
   mkdirSync(path: string) {
