@@ -1,8 +1,8 @@
 import { image_dao, ImageDB, store_rs_dao, DaoType } from '../../dao';
 import { ResponseUtils } from '@service-fw';
-import { Tree } from 'src/storage/common/tree';
-import fs from 'fs';
+import { Tree, Fs } from 'src/storage/common';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
+const fs = new Fs();
 
 export async function insert(ctx) {
   if (!/^multipart\/form-data;\sboundary=.*/.test(ctx.request.headers['content-type'])) {
@@ -38,8 +38,9 @@ export async function insert(ctx) {
     rsCreateAt: new Date(),
     rsPath: _rsPath
   });
+  
   // 上传图片
-  // 待办： 添加压缩图片 https://www.cnblogs.com/fslnet/p/11769436.html
+  // 待办： 添加压缩图片功能 https://www.cnblogs.com/fslnet/p/11769436.html
   const _imgData = fs.readFileSync(_imgPath); //将上传到服务器上的临时资源 读取到一个变量里面
   try {
     fs.writeFileSync(`./assets${_rsPath}`, _imgData);

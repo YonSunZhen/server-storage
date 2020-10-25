@@ -40,4 +40,16 @@ router.put('/store_rs/:no', store_rs_controller.updateRs);
  */
 router.get('/store_rs', store_rs_controller.getRs);
 
+/**
+ * @api {DELETE} /store_rs 删除文件关系
+ * @apiDescription  删除文件关系
+ * @apiVersion 1.0.0
+ * @apiName store_rs
+ * @apiGroup store_rs
+ *
+ * @apiParam (body) {string} id id
+ * @apiParam (body) {string} [name] name
+ */
+router.delete('/store_rs/:no', store_rs_controller.delRs);
+
 export default router;

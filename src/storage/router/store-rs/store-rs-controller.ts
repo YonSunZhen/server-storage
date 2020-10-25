@@ -1,6 +1,6 @@
 import { store_rs_dao, StoreRsDB, DaoType } from '../../dao';
 import { ResponseUtils } from '@service-fw';
-import { Tree } from 'src/storage/common/tree';
+import { Tree } from 'src/storage/common';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
 
 export async function getRsTree(ctx) {
@@ -28,6 +28,15 @@ export async function updateRs(ctx) {
 
 export async function getRs(ctx) {
   const _query: StoreRsDB = ctx.request.query;
-  const _storeRsData = await store_rs_dao.getStoreRs(_query);
+  const _storeRsData = await store_rs_dao.getStoreRsDetail(_query);
   ctx.body = ResponseUtils.normal<any>({ data: _storeRsData });
+}
+
+export async function delRs(ctx) {
+  const _params = ctx.params;
+  const _body: StoreRsDB = ctx.request.body;
+  const _no = _params.no;
+  // 删除实体文件
+
+  // 删除数据库关系数据(rs表 folder表 image表)
 }

@@ -1,8 +1,8 @@
 import { folder_dao, FolderDB, store_rs_dao, DaoType } from '../../dao';
 import { ResponseUtils } from '@service-fw';
-import { Tree } from 'src/storage/common/tree';
-import fs from 'fs';
+import { Tree, Fs } from 'src/storage/common';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
+const fs = new Fs();
 
 export async function insert(ctx) {
   const _body: FolderDB = ctx.request.body;
