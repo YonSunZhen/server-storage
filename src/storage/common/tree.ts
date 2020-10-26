@@ -25,7 +25,7 @@ export class Tree {
    * 数组生成树结构数据
    * @param data 
    */
-  generateTree(data: Array<any>) {
+  generateTree<T>(data: Array<any>): T{
     let result;
     for (let i = 0; i < data.length; i++) {
       if (data[i][this.no] === this.rootNo) {

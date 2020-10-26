@@ -34,9 +34,16 @@ async function getImage(options?: ImageDB): Promise<ImageDB[]> {
   return res;
 }
 
+async function delete1(options: ImageDB) {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).delete().where(_options);
+  return res;
+}
+
 
 export const image_dao = {
   ensure,
   insert,
-  getImage
+  getImage,
+  delete1
 };

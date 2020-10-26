@@ -41,9 +41,9 @@ export async function insert(ctx) {
   
   // 上传图片
   // 待办： 添加压缩图片功能 https://www.cnblogs.com/fslnet/p/11769436.html
-  const _imgData = fs.readFileSync(_imgPath); //将上传到服务器上的临时资源 读取到一个变量里面
+  const _imgData = await fs.readFileSync(_imgPath); //将上传到服务器上的临时资源 读取到一个变量里面
   try {
-    fs.writeFileSync(`./assets${_rsPath}`, _imgData);
+    await fs.writeFileSync(`./assets${_rsPath}`, _imgData);
     if(addStoreRsRes) {
       const _res = await store_rs_dao.getStoreRsDetail({rsId: addStoreRsRes[0]});
       ctx.body = ResponseUtils.normal<any>({ data: _res });

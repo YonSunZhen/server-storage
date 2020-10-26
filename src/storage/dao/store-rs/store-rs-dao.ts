@@ -40,11 +40,11 @@ async function insert(options: StoreRsDB): Promise<number> {
 
 async function getStoreRs(options: StoreRsDB): Promise<StoreRsDB[]> {
   const _options = DataOptions(options);
-  const res = await db.table(TABLE_NAME).select('*').where(_options);
+  const res: StoreRsDB[] = await db.table(TABLE_NAME).select('*').where(_options);
   return res;
 }
 
-async function getStoreRsDetail(options: StoreRsDB): Promise<StoreRsDB[]> {
+async function getStoreRsDetail(options?: StoreRsDB): Promise<StoreRsDB[]> {
   const _options = DataOptions(options);
   // const res = await db.table(TABLE_NAME).select('*').leftJoin('folder', function() {
   //   this.on(`${TABLE_NAME}.entityId`, '=', 'folder.folderId').onIn(`${TABLE_NAME}.entityType`, ['1']);
@@ -86,10 +86,17 @@ async function update(rsNo: string, options: StoreRsDB) {
   return res;
 }
 
+async function delete1(options: StoreRsDB) {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).delete().where(_options);
+  return res;
+}
+
 export const store_rs_dao = {
   ensure,
   insert,
   getStoreRs,
   getStoreRsDetail,
-  update
+  update,
+  delete1
 };

@@ -50,6 +50,9 @@ router.get('/store_rs', store_rs_controller.getRs);
  * @apiParam (body) {string} id id
  * @apiParam (body) {string} [name] name
  */
-router.delete('/store_rs/:no', store_rs_controller.delRs);
+router.delete('/store_rs/recycle', store_rs_controller.delRs);
+
+router.delete('/store_rs/recycle/test', store_rs_controller.test);
+
 
 export default router;

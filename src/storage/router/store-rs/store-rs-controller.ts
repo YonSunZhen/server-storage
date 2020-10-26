@@ -1,7 +1,8 @@
-import { store_rs_dao, StoreRsDB, DaoType } from '../../dao';
+import { store_rs_dao, StoreRsDB, image_dao, folder_dao, StoreRsDetailTree, StoreRsDetail } from '../../dao';
 import { ResponseUtils } from '@service-fw';
-import { Tree } from 'src/storage/common';
+import { Tree, Fs } from 'src/storage/common';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
+const fs = new Fs();
 
 export async function getRsTree(ctx) {
   const _query = ctx.request.query;
@@ -32,11 +33,55 @@ export async function getRs(ctx) {
   ctx.body = ResponseUtils.normal<any>({ data: _storeRsData });
 }
 
-export async function delRs(ctx) {
-  const _params = ctx.params;
-  const _body: StoreRsDB = ctx.request.body;
-  const _no = _params.no;
-  // 删除实体文件
+export async function test(ctx) {
+  fs.deleteFolderRecursive('/1_142_图片2/');
+  ctx.body = ResponseUtils.normal<any>({ data: '删除成功' });
+}
 
-  // 删除数据库关系数据(rs表 folder表 image表)
+export async function delRs(ctx) {
+  // query 不能传数组???
+  const _query = ctx.request.query;
+  const _noStr: string = _query.rsNo;
+  const _noArr = _noStr.split(',');
+  for(let i = 0; i < _noArr.length; i++) {
+    const _rsNo = _noArr[i];
+    const _rsRes = (await store_rs_dao.getStoreRs({rsNo: _rsNo}))[0];
+    const _rsPath = _rsRes.rsPath;
+    // 删除实体文件
+    fs.deleteFolderRecursive(_rsPath);
+    // 删除数据库关系数据(rs表 folder表 image表)
+    const _tree = new Tree(_rsNo, 'rsNo', 'rsParentNo');
+    // 包含状态0&1的数据
+    const _storeRsData = await store_rs_dao.getStoreRsDetail();
+    const storeRsTreeData = _tree.generateTree<StoreRsDetailTree>(_storeRsData);
+    const _recurse = async (data: StoreRsDetailTree) => {
+      await _delFolderAndFile(data.data);
+      if(data.children) {
+        for(let i = 0; i < data.children.length; i++) {
+          const d = data.children[i];
+          _recurse(d);
+        }
+      }
+    };
+    _recurse(storeRsTreeData);
+  }
+  ctx.body = ResponseUtils.normal<any>({ data: '删除成功' });
+}
+
+async function _delFolderAndFile(data: StoreRsDetail) {
+  const _rsId = data.rsId;
+  const _entityType = data.entityType;
+  const _entityId = data.entityId;
+  const _delRsRes = await store_rs_dao.delete1({rsId: _rsId});
+  let _delEntityRes;
+  if(_entityType === 1) {
+    _delEntityRes = await folder_dao.delete1({folderId: _entityId});
+  } else if(_entityType === 2) {
+    _delEntityRes = await image_dao.delete1({imgId: _entityId});
+  }
+  console.log('这里是调试1');
+  console.log(_delRsRes);
+  console.log(_delEntityRes);
+  
+  
 }

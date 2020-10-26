@@ -32,9 +32,16 @@ async function getFolder(options?: FolderDB): Promise<FolderDB[]> {
   return res;
 }
 
+async function delete1(options: FolderDB) {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).delete().where(_options);
+  return res;
+}
+
 
 export const folder_dao = {
   ensure,
   insert,
-  getFolder
+  getFolder,
+  delete1
 };
