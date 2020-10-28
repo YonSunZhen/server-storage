@@ -1,12 +1,15 @@
 // import fs from 'fs';
 import path from 'path';
 import fs from 'fs-extra';
+import config from 'config';
 
 export class Fs {
 
   private _baseUrl: string;
   constructor(baseUrl?: string) {
-    this._baseUrl = baseUrl ? baseUrl : 'D:/uidq2225/Desktop/storage/server-storage/assets';
+    // const _baseUrlConfig = config.get<string>('baseUrl');
+    const _baseUrlConfig = path.join(__dirname, '../../../assets');
+    this._baseUrl = baseUrl ? baseUrl : _baseUrlConfig;
   }
 
   // 同步创建文件夹

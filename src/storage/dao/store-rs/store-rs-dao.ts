@@ -25,7 +25,7 @@ async function ensure() {
     await db.table(TABLE_NAME).insert([
       {
         'entityType': 1,
-        'rsPathName': '/',
+        'rsPathName': '',
         'rsNo': '100'
       }
     ]);

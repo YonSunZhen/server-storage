@@ -8,5 +8,6 @@
       "database": "storage"
     }
   },
-  "upstream": {}
+  "upstream": {},
+  "baseUrl": "D:/uidq2225/Desktop/storage/server-storage/assets"
 }
