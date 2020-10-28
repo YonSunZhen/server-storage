@@ -1,6 +1,6 @@
 import { storage_db as db } from '../storage-db';
 import { storage_logger as logger } from '@storage-logger';
-import { StoreRsDB } from './store-rs-types';
+import { StoreRsDB, StoreRsDetail } from './store-rs-types';
 import { DaoType } from '../dao-types';
 import { DataOptions, dbHelper } from '../utils';
 import { folder_dao } from '../folder';
@@ -16,7 +16,7 @@ async function ensure() {
       t.increments('rsId').primary().notNullable().comment('自增id');
       t.integer('entityType', 10).defaultTo(null).comment('实体类型');
       t.integer('entityId', 10).defaultTo(null).comment('实体id');
-      t.string('rsPath', 200).defaultTo(null).comment('路径');
+      t.string('rsPathName', 200).defaultTo(null).comment('路径');
       t.string('rsNo', 200).defaultTo(null).comment('存储编号');
       t.string('rsParentNo', 200).defaultTo(null).comment('父编号');
       t.dateTime('rsCreateAt').defaultTo(null).comment('创建时间');
@@ -25,7 +25,7 @@ async function ensure() {
     await db.table(TABLE_NAME).insert([
       {
         'entityType': 1,
-        'rsPath': '/',
+        'rsPathName': '/',
         'rsNo': '100'
       }
     ]);
@@ -44,7 +44,7 @@ async function getStoreRs(options: StoreRsDB): Promise<StoreRsDB[]> {
   return res;
 }
 
-async function getStoreRsDetail(options?: StoreRsDB): Promise<StoreRsDB[]> {
+async function getStoreRsDetail(options?: StoreRsDB): Promise<StoreRsDetail[]> {
   const _options = DataOptions(options);
   // const res = await db.table(TABLE_NAME).select('*').leftJoin('folder', function() {
   //   this.on(`${TABLE_NAME}.entityId`, '=', 'folder.folderId').onIn(`${TABLE_NAME}.entityType`, ['1']);
@@ -55,21 +55,22 @@ async function getStoreRsDetail(options?: StoreRsDB): Promise<StoreRsDB[]> {
   const _folderData = await folder_dao.getFolder();
   const _imgData = await image_dao.getImage();
   const _storeRsData: StoreRsDB[] = await db.table(TABLE_NAME).select('*').where(_options);
-  _storeRsData.forEach(_s => {
+  for(let i = 0; i < _storeRsData.length; i++) {
+    const _s = _storeRsData[i];
     let _entityObj;
     if(_s.entityType === 1) {
-      _entityObj = _getEntityData(_s, _folderData);
+      _entityObj =  await _getEntityData(_s, _folderData);
     } else if(_s.entityType === 2) {
-      _entityObj = _getEntityData(_s, _imgData);
+      _entityObj = await _getEntityData(_s, _imgData);
     }
     const _resItem = Object.assign({}, _s, _entityObj);
     res.push(_resItem);
-  });
+  }
   return res;
 }
 
-function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
-  let res = {};
+async function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
+  let res: StoreRsDetail = {};
   const _entityId = storeRsItem.entityId;
   entityData.forEach(e => {
     const _id = e['imgId'] || e['folderId'];
@@ -77,6 +78,37 @@ function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
       res = e;
     }
   });
+  // 拼接生成rsPath
+  const _rsParentNo = storeRsItem.rsParentNo;
+  const _rsPathName = storeRsItem.rsPathName;
+  if(_rsParentNo) {
+    const _rsPath = await _genRsPath(_rsPathName, _rsParentNo);
+    res.rsPath = _rsPath;
+  } 
+  return res;
+}
+
+async function _genRsPath(rsPathName: string, rsParentNo: string): Promise<string> {
+  let res = '';
+  const _rsParentNoArr = _genRsParentNoArr(rsParentNo);
+  for(let i = 0; i < _rsParentNoArr.length; i++) {
+    const _rsNoItem = _rsParentNoArr[i];
+    const _rsParnetPathName = (await getStoreRs({rsNo: _rsNoItem}))[0].rsPathName;
+    res += _rsParnetPathName;
+  }
+  res += rsPathName;
+  return res;
+}
+
+// 100001001 => 100 100001 100001001
+function _genRsParentNoArr(rsParentNo: string): string[] {
+  const res = [];
+  const _parentNoLen = rsParentNo.length / 3;
+  for(let i = 0; i < _parentNoLen; i++) {
+    const _index = (i + 1)*3;
+    const _item = rsParentNo.slice(0, _index);
+    res.push(_item);
+  }
   return res;
 }
 

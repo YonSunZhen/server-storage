@@ -1,6 +1,7 @@
 import { image_dao, ImageDB, store_rs_dao, DaoType } from '../../dao';
 import { ResponseUtils } from '@service-fw';
 import { Tree, Fs } from 'src/storage/common';
+import { genImgName, genRsPathName } from '../utils';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
 const fs = new Fs();
 
@@ -15,13 +16,12 @@ export async function insert(ctx) {
   const _files = ctx.request.files;
   const _image = _files['imgData'];
   const _imgPath = _image['path'];
-  const _addImageParams: ImageDB = {
+  let _addImageParams: ImageDB = {
     imgType: _imgType,
-    imgOriginName: `${_body.imgOriginName}`,
-    imgThumName: `${_body.imgOriginName}_thum`,
-    imgIntactName: `${_body.imgOriginName}_intact`,
     imgCreateAt: new Date()
   };
+  const _imgNameObj = genImgName(_body.imgOriginName);
+  _addImageParams = Object.assign({}, _addImageParams, _imgNameObj);
   // 添加图片
   const addImageRes = await image_dao.insert(_addImageParams);
   const _entityId = addImageRes[0];
@@ -29,21 +29,26 @@ export async function insert(ctx) {
   const getStoreRsRes = await store_rs_dao.getStoreRs({rsParentNo: _rsParentNo, rsStatus: 1});
   const parentInfo = (await store_rs_dao.getStoreRs({rsNo: _rsParentNo, rsStatus: 1}))[0];
   const rsNo = tree.generateMaxNo(_rsParentNo, getStoreRsRes);
-  const _rsPath = `${parentInfo.rsPath}2_${_entityId}_${_body.imgOriginName}.${_imgType}`;
+  const _rsPathName = genRsPathName(parentInfo.rsPathName, {
+    entityType: 2,
+    entityId: _entityId, 
+    name: _body.imgOriginName,
+    fileType: _imgType
+  });
   const addStoreRsRes = await store_rs_dao.insert({
     entityType: 2,
     entityId: _entityId,
     rsNo,
     rsParentNo: _rsParentNo,
     rsCreateAt: new Date(),
-    rsPath: _rsPath
+    rsPathName: _rsPathName
   });
   
   // 上传图片
   // 待办： 添加压缩图片功能 https://www.cnblogs.com/fslnet/p/11769436.html
   const _imgData = await fs.readFileSync(_imgPath); //将上传到服务器上的临时资源 读取到一个变量里面
   try {
-    await fs.writeFileSync(`./assets${_rsPath}`, _imgData);
+    await fs.writeFileSync(`./assets${_rsPathName}`, _imgData);
     if(addStoreRsRes) {
       const _res = await store_rs_dao.getStoreRsDetail({rsId: addStoreRsRes[0]});
       ctx.body = ResponseUtils.normal<any>({ data: _res });

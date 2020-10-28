@@ -40,10 +40,17 @@ async function delete1(options: ImageDB) {
   return res;
 }
 
+async function update(imgId: number, options: ImageDB) {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).update(_options).where({imgId});
+  return res;
+}
+
 
 export const image_dao = {
   ensure,
   insert,
   getImage,
-  delete1
+  delete1,
+  update
 };

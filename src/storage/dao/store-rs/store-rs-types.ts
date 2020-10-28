@@ -5,7 +5,7 @@ export interface StoreRsDB {
   rsId?: string;
   entityType?: number; // 1folder 2image
   entityId?: number;
-  rsPath?: string;
+  rsPathName?: string;
   rsNo?: string;
   rsParentNo?: string;
   rsCreateAt?: Date;
@@ -18,5 +18,5 @@ export interface StoreRsDetailTree {
 }
 
 export interface StoreRsDetail extends FolderDB, ImageDB, StoreRsDB {
-
+  rsPath?: string;
 }

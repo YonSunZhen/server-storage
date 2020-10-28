@@ -29,6 +29,18 @@ router.get('/store_rs/tree', store_rs_controller.getRsTree);
 router.put('/store_rs/:no', store_rs_controller.updateRs);
 
 /**
+ * @api {PUT} /store_rs 修改store_rs详情
+ * @apiDescription 修改store_rs
+ * @apiVersion 1.0.0
+ * @apiName store_rs
+ * @apiGroup store_rs
+ *
+ * @apiParam (body) {string} id id
+ * @apiParam (body) {string} [name] name
+ */
+router.put('/store_rs/detail/:no', store_rs_controller.updateRsDetail);
+
+/**
  * @api {GET} /store_rs 获取文件关系
  * @apiDescription  获取文件关系
  * @apiVersion 1.0.0

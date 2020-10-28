@@ -52,6 +52,13 @@ export class Fs {
     fs.rmdirSync(url, {recursive: true});
   }
 
+  // 更改文件名
+  rename(oldUrl: string, newUrl: string) {
+    const _oldUrl = path.join(this._baseUrl, oldUrl);
+    const _newUrl = path.join(this._baseUrl, newUrl);
+    fs.renameSync(_oldUrl, _newUrl);
+  }
+
   deleteFolderRecursive(url: string) {
     const _url = path.join(this._baseUrl, url);
     if(this.existsSync(_url)) {

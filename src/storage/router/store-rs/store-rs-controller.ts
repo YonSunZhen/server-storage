@@ -1,6 +1,7 @@
-import { store_rs_dao, StoreRsDB, image_dao, folder_dao, StoreRsDetailTree, StoreRsDetail } from '../../dao';
+import { store_rs_dao, StoreRsDB, image_dao, folder_dao, StoreRsDetailTree, StoreRsDetail, ImageDB } from '../../dao';
 import { ResponseUtils } from '@service-fw';
 import { Tree, Fs } from 'src/storage/common';
+import { genImgName, genRsPathName } from '../utils';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
 const fs = new Fs();
 
@@ -46,26 +47,59 @@ export async function delRs(ctx) {
   for(let i = 0; i < _noArr.length; i++) {
     const _rsNo = _noArr[i];
     const _rsRes = (await store_rs_dao.getStoreRs({rsNo: _rsNo}))[0];
-    const _rsPath = _rsRes.rsPath;
+    const _rsPathName = _rsRes.rsPathName;
     // 删除实体文件
-    fs.deleteFolderRecursive(_rsPath);
+    fs.deleteFolderRecursive(_rsPathName);
     // 删除数据库关系数据(rs表 folder表 image表)
     const _tree = new Tree(_rsNo, 'rsNo', 'rsParentNo');
     // 包含状态0&1的数据
     const _storeRsData = await store_rs_dao.getStoreRsDetail();
     const storeRsTreeData = _tree.generateTree<StoreRsDetailTree>(_storeRsData);
-    const _recurse = async (data: StoreRsDetailTree) => {
+    const _recurseFn = async (data: StoreRsDetailTree) => {
       await _delFolderAndFile(data.data);
       if(data.children) {
         for(let i = 0; i < data.children.length; i++) {
           const d = data.children[i];
-          _recurse(d);
+          _recurseFn(d);
         }
       }
     };
-    _recurse(storeRsTreeData);
+    _recurseFn(storeRsTreeData);
   }
   ctx.body = ResponseUtils.normal<any>({ data: '删除成功' });
+}
+
+export async function updateRsDetail(ctx) {
+  
+  const _params = ctx.params;
+  const _body = ctx.request.body;
+  const _no = _params.no;
+  const _fileName = _body['fileName'];
+  const _rsParentNo = _body['rsParentNo'];
+  const _rsData = (await store_rs_dao.getStoreRsDetail({rsNo: _no}))[0];
+  const _entityType = _rsData.entityType;
+  const _entityId = _rsData.entityId;
+  const _fileType = _rsData.imgType;
+  if(_entityType === 1) {  
+    await folder_dao.update(_entityId, {folderName: _fileName, folderUpdateAt: new Date()});
+  } else if(_entityType === 2) {
+    const _updateImgParams: ImageDB = Object.assign({}, genImgName(_fileName));
+    _updateImgParams.imgUpdateAt = new Date();
+    await image_dao.update(_entityId, _updateImgParams);
+  }
+  const _parentInfo = (await store_rs_dao.getStoreRs({rsNo: _rsParentNo, rsStatus: 1}))[0];
+  const _rsPathName = genRsPathName(_parentInfo.rsPathName, {
+    entityId: _entityId,
+    entityType: _entityType,
+    name: _fileName,
+    fileType: _fileType
+  });
+  await store_rs_dao.update(_no, {rsPathName: _rsPathName});
+  const _newRsPathName = (await store_rs_dao.getStoreRsDetail({rsNo: _no}))[0].rsPath;
+  // 修改内存文件名
+  fs.rename(_rsData.rsPath, _newRsPathName);
+  ctx.body = ResponseUtils.normal<any>({ data: '更新成功' });
+  
 }
 
 async function _delFolderAndFile(data: StoreRsDetail) {

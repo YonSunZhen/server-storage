@@ -1,6 +1,7 @@
 import { folder_dao, FolderDB, store_rs_dao, DaoType } from '../../dao';
 import { ResponseUtils } from '@service-fw';
 import { Tree, Fs } from 'src/storage/common';
+import { genRsPathName } from '../utils';
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
 const fs = new Fs();
 
@@ -20,17 +21,21 @@ export async function insert(ctx) {
   const getStoreRsRes = await store_rs_dao.getStoreRs({rsParentNo, rsStatus: 1});
   const parentInfo = (await store_rs_dao.getStoreRs({rsNo: rsParentNo, rsStatus: 1}))[0];
   const rsNo = tree.generateMaxNo(rsParentNo, getStoreRsRes);
-  const _rsPath = `${parentInfo.rsPath}1_${_entityId}_${_body.folderName}/`;
+  const _rsPathName = genRsPathName(parentInfo.rsPathName, {
+    entityType: 1, 
+    entityId: _entityId, 
+    name: _body.folderName
+  });
   // 创建文件夹
   try {
-    await fs.mkdirSync(`./assets${_rsPath}`);
+    await fs.mkdirSync(`./assets${_rsPathName}`);
     const addStoreRsRes = await store_rs_dao.insert({
       entityType: 1,
       entityId: _entityId,
       rsNo,
       rsParentNo,
       rsCreateAt: new Date(),
-      rsPath: _rsPath
+      rsPathName: _rsPathName
     });
     if(addStoreRsRes) {
       const _res = await store_rs_dao.getStoreRsDetail({rsId: addStoreRsRes[0]});

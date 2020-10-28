@@ -38,10 +38,17 @@ async function delete1(options: FolderDB) {
   return res;
 }
 
+async function update(folderId: number, options: FolderDB) {
+  const _options = DataOptions(options);
+  const res = await db.table(TABLE_NAME).update(_options).where({folderId});
+  return res;
+}
+
 
 export const folder_dao = {
   ensure,
   insert,
   getFolder,
-  delete1
+  delete1,
+  update
 };
