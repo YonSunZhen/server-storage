@@ -1,5 +1,6 @@
-import fs from 'fs';
+// import fs from 'fs';
 import path from 'path';
+import fs from 'fs-extra';
 
 export class Fs {
 
@@ -52,6 +53,10 @@ export class Fs {
     fs.rmdirSync(url, {recursive: true});
   }
 
+  remove(url: string) {
+    fs.removeSync(url);
+  }
+
   // 更改文件名
   rename(oldUrl: string, newUrl: string) {
     const _oldUrl = path.join(this._baseUrl, oldUrl);
@@ -61,22 +66,23 @@ export class Fs {
 
   deleteFolderRecursive(url: string) {
     const _url = path.join(this._baseUrl, url);
-    if(this.existsSync(_url)) {
-      if(this.isDirectory(_url)) {
-        const files = this.readDirSync(_url);
-        files.forEach(f => {
-          const _f = `${url}${f}\\`;
-          this.deleteFolderRecursive(_f);
-        });    
-        // 不执行 this.readDirSync(_url) 报错???
-        if(this.readDirSync(_url).length === 0) {
-          this.delFolder(_url);
-        } else {
-          this.deleteFolderRecursive(url);
-        }
-      } else {
-        this.delFile(_url);
-      }
-    }
+    this.remove(_url);
+    // if(this.existsSync(_url)) {
+    //   if(this.isDirectory(_url)) {
+    //     const files = this.readDirSync(_url);
+    //     files.forEach(f => {
+    //       const _f = `${url}${f}\\`;
+    //       this.deleteFolderRecursive(_f);
+    //     });    
+    //     // 不执行 this.readDirSync(_url) 报错???
+    //     if(this.readDirSync(_url).length === 0) {
+    //       this.delFolder(_url);
+    //     } else {
+    //       this.deleteFolderRecursive(url);
+    //     }
+    //   } else {
+    //     this.delFile(_url);
+    //   }
+    // }
   }
 }

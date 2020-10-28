@@ -46,8 +46,11 @@ export async function delRs(ctx) {
   const _noArr = _noStr.split(',');
   for(let i = 0; i < _noArr.length; i++) {
     const _rsNo = _noArr[i];
-    const _rsRes = (await store_rs_dao.getStoreRs({rsNo: _rsNo}))[0];
-    const _rsPathName = _rsRes.rsPathName;
+    const _rsRes = (await store_rs_dao.getStoreRsDetail({rsNo: _rsNo}))[0];
+    const _rsPathName = _rsRes.rsPath;
+    console.log('这里是调试1');
+    console.log(_rsPathName);
+    
     // 删除实体文件
     fs.deleteFolderRecursive(_rsPathName);
     // 删除数据库关系数据(rs表 folder表 image表)

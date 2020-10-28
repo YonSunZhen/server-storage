@@ -26,9 +26,10 @@ export async function insert(ctx) {
     entityId: _entityId, 
     name: _body.folderName
   });
+  const _rsPath = await store_rs_dao.genRsPath(_rsPathName, rsParentNo);
   // 创建文件夹
   try {
-    await fs.mkdirSync(`./assets${_rsPathName}`);
+    await fs.mkdirSync(`./assets${_rsPath}`);
     const addStoreRsRes = await store_rs_dao.insert({
       entityType: 1,
       entityId: _entityId,

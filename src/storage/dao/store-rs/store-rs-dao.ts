@@ -82,13 +82,13 @@ async function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
   const _rsParentNo = storeRsItem.rsParentNo;
   const _rsPathName = storeRsItem.rsPathName;
   if(_rsParentNo) {
-    const _rsPath = await _genRsPath(_rsPathName, _rsParentNo);
+    const _rsPath = await genRsPath(_rsPathName, _rsParentNo);
     res.rsPath = _rsPath;
   } 
   return res;
 }
 
-async function _genRsPath(rsPathName: string, rsParentNo: string): Promise<string> {
+export async function genRsPath(rsPathName: string, rsParentNo: string): Promise<string> {
   let res = '';
   const _rsParentNoArr = _genRsParentNoArr(rsParentNo);
   for(let i = 0; i < _rsParentNoArr.length; i++) {
@@ -130,5 +130,6 @@ export const store_rs_dao = {
   getStoreRs,
   getStoreRsDetail,
   update,
-  delete1
+  delete1,
+  genRsPath
 };
