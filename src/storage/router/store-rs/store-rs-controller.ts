@@ -113,7 +113,7 @@ async function _delFolderAndFile(data: StoreRsDetail) {
   } else if(_entityType === 2) {
     _delEntityRes = await image_dao.delete1({imgId: _entityId});
   }
-  console.log(_delRsRes);
-  console.log(_delEntityRes);
+  // console.log(_delRsRes);
+  // console.log(_delEntityRes);
   
 }
