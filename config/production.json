@@ -3,7 +3,7 @@
   "storage": {
     "db": {
       "host": "122.51.184.238",
-      "port": 3306,
+      "port": 33306,
       "user": "root",
       "password": "",
       "database": "storage"
