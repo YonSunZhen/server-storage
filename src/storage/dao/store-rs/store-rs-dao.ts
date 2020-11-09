@@ -5,6 +5,7 @@ import { DaoType } from '../dao-types';
 import { DataOptions, dbHelper } from '../utils';
 import { folder_dao } from '../folder';
 import { image_dao } from '../image';
+import { genRsPathName } from '../../router/utils';
 
 const TABLE_NAME = 'store_rs';
 
@@ -89,9 +90,13 @@ async function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
     res.rsPath = _rsPath;
     if(_isThum && _entityType === 2) {
       const _thumRsPathNameTemp = (await image_dao.getImage({imgId: _entityId}))[0];
-      const _reg = new RegExp(_thumRsPathNameTemp.imgOriginName);
       // 用缩略图名替换原始名
-      const _thumRsPathName = _rsPathName.replace(_reg, _thumRsPathNameTemp.imgThumName);
+      const _thumRsPathName = genRsPathName({
+        entityId: _thumRsPathNameTemp.imgId,
+        entityType: 2,
+        name: _thumRsPathNameTemp.imgThumName,
+        fileType: _thumRsPathNameTemp.imgType
+      });
       const _thumRsPath = await genRsPath(_thumRsPathName, _rsParentNo);
       res.thumRsPath = _thumRsPath;
     }
