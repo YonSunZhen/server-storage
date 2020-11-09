@@ -88,7 +88,6 @@ export class Fs {
     //   }
     // }
   }
-
   /**
    * 压缩图片并存储
    * @param imgUrl 原图片路径
