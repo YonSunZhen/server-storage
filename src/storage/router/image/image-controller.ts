@@ -2,8 +2,6 @@ import { image_dao, ImageDB, store_rs_dao, DaoType } from '../../dao';
 import { ResponseUtils } from '@service-fw';
 import { Tree, Fs } from 'src/storage/common';
 import { genImgName, genRsPathName } from '../utils';
-import images from 'images';
-import path from 'path';
 
 const tree = new Tree('100', 'rsNo', 'rsParentNo');
 const fs = new Fs();
