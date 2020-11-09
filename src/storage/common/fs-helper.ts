@@ -1,7 +1,7 @@
 // import fs from 'fs';
 import path from 'path';
 import fs from 'fs-extra';
-import config from 'config';
+import images from 'images';
 
 export class Fs {
 
@@ -87,5 +87,26 @@ export class Fs {
     //     this.delFile(_url);
     //   }
     // }
+  }
+
+  /**
+   * 压缩图片并存储
+   * @param imgUrl 原图片路径
+   * @param outUrl 缩略图输出路径
+   * @param quality 图片质量 50
+   * @param type 图片格式 目前支持设置JPG图像质量
+   */
+  async compressImg(imgUrl: string, outUrl: string, quality = 50, type = 'jpg' as any,): Promise<images.Image> {
+    const _outUrl = path.join(this._baseUrl, outUrl);
+    return new Promise((resolve, reject) => {
+      const _image = images(imgUrl).saveAsync(_outUrl, 'jpg', {quality: quality}, (err) => {
+        if(err) {
+          console.log(err);
+          reject(err);
+        } else {
+          resolve(_image);
+        }
+      });
+    });
   }
 }

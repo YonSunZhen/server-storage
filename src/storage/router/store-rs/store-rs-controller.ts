@@ -88,7 +88,7 @@ export async function updateRsDetail(ctx) {
     await image_dao.update(_entityId, _updateImgParams);
   }
   const _parentInfo = (await store_rs_dao.getStoreRs({rsNo: _rsParentNo, rsStatus: 1}))[0];
-  const _rsPathName = genRsPathName(_parentInfo.rsPathName, {
+  const _rsPathName = genRsPathName({
     entityId: _entityId,
     entityType: _entityType,
     name: _fileName,

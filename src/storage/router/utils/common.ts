@@ -15,7 +15,7 @@ export function genImgName(name: string): ImgName{
   };
 }
 
-export function genRsPathName(parentPath: string, rsParams: GenrsPathNameParams): string {
+export function genRsPathName(rsParams: GenrsPathNameParams): string {
   let res: string;
   const _entityType = rsParams.entityType;
   const _entityId = rsParams.entityId;

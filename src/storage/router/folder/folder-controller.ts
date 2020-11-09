@@ -21,7 +21,7 @@ export async function insert(ctx) {
   const getStoreRsRes = await store_rs_dao.getStoreRs({rsParentNo, rsStatus: 1});
   const parentInfo = (await store_rs_dao.getStoreRs({rsNo: rsParentNo, rsStatus: 1}))[0];
   const rsNo = tree.generateMaxNo(rsParentNo, getStoreRsRes);
-  const _rsPathName = genRsPathName(parentInfo.rsPathName, {
+  const _rsPathName = genRsPathName({
     entityType: 1, 
     entityId: _entityId, 
     name: _body.folderName

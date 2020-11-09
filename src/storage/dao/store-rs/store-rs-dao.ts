@@ -21,6 +21,7 @@ async function ensure() {
       t.string('rsParentNo', 200).defaultTo(null).comment('父编号');
       t.dateTime('rsCreateAt').defaultTo(null).comment('创建时间');
       t.integer('rsStatus').defaultTo(1).comment('状态 0删除 1存在');
+      t.integer('isThum').defaultTo(0).comment('是否有缩略图');
     }).catch((err) => logger.error(err));
     await db.table(TABLE_NAME).insert([
       {
@@ -72,6 +73,7 @@ async function getStoreRsDetail(options?: StoreRsDB): Promise<StoreRsDetail[]> {
 async function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
   let res: StoreRsDetail = {};
   const _entityId = storeRsItem.entityId;
+  const _entityType = storeRsItem.entityType;
   entityData.forEach(e => {
     const _id = e['imgId'] || e['folderId'];
     if(_entityId === _id) {
@@ -81,9 +83,18 @@ async function _getEntityData(storeRsItem: StoreRsDB, entityData: any[]) {
   // 拼接生成rsPath
   const _rsParentNo = storeRsItem.rsParentNo;
   const _rsPathName = storeRsItem.rsPathName;
+  const _isThum = storeRsItem.isThum;
   if(_rsParentNo) {
     const _rsPath = await genRsPath(_rsPathName, _rsParentNo);
     res.rsPath = _rsPath;
+    if(_isThum && _entityType === 2) {
+      const _thumRsPathNameTemp = (await image_dao.getImage({imgId: _entityId}))[0];
+      const _reg = new RegExp(_thumRsPathNameTemp.imgOriginName);
+      // 用缩略图名替换原始名
+      const _thumRsPathName = _rsPathName.replace(_reg, _thumRsPathNameTemp.imgThumName);
+      const _thumRsPath = await genRsPath(_thumRsPathName, _rsParentNo);
+      res.thumRsPath = _thumRsPath;
+    }
   } 
   return res;
 }

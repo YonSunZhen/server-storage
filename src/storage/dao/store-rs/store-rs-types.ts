@@ -10,6 +10,7 @@ export interface StoreRsDB {
   rsParentNo?: string;
   rsCreateAt?: Date;
   rsStatus?: number; // 0删除 1存在
+  isThum?: number; // 0 没有 1 有
 }
 
 export interface StoreRsDetailTree {
@@ -19,4 +20,5 @@ export interface StoreRsDetailTree {
 
 export interface StoreRsDetail extends FolderDB, ImageDB, StoreRsDB {
   rsPath?: string;
+  thumRsPath?: string;
 }
