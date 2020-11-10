@@ -50,6 +50,10 @@ export async function delRs(ctx) {
     const _rsPathName = _rsRes.rsPath;
     // 删除实体文件
     fs.deleteFolderRecursive(_rsPathName);
+    if(_rsRes.isThum) {
+      const _thumRsPathName = _rsRes.thumRsPath;
+      fs.deleteFolderRecursive(_thumRsPathName);
+    }
     // 删除数据库关系数据(rs表 folder表 image表)
     const _tree = new Tree(_rsNo, 'rsNo', 'rsParentNo');
     // 包含状态0&1的数据
