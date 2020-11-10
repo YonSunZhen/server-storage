@@ -95,9 +95,16 @@ export async function updateRsDetail(ctx) {
     fileType: _fileType
   });
   await store_rs_dao.update(_no, {rsPathName: _rsPathName});
-  const _newRsPathName = (await store_rs_dao.getStoreRsDetail({rsNo: _no}))[0].rsPath;
+  const _newRsInfo = (await store_rs_dao.getStoreRsDetail({rsNo: _no}))[0];
+  const _newRsPathName = _newRsInfo.rsPath;
+  const _isThum = _newRsInfo.isThum;
   // 修改内存文件名
   fs.rename(_rsData.rsPath, _newRsPathName);
+  if(_isThum) {
+    // 修改缩略图文件名
+    const _newThumRsPathName = _newRsInfo.thumRsPath;
+    fs.rename(_rsData.thumRsPath, _newThumRsPathName);
+  }
   ctx.body = ResponseUtils.normal<any>({ data: '更新成功' });
   
 }
